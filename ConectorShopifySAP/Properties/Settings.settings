@@ -1,0 +1,81 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ConectorShopifySAP.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="CompanyDB" Type="System.String" Scope="User">
+      <Value Profile="(Default)">TEST_DERMA</Value>
+    </Setting>
+    <Setting Name="UserSAP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">manager</Value>
+    </Setting>
+    <Setting Name="PassSAP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">B1AdminH2</Value>
+    </Setting>
+    <Setting Name="urlSL" Type="System.String" Scope="User">
+      <Value Profile="(Default)">http://172.16.61.28:50001/b1s/v1/</Value>
+    </Setting>
+    <Setting Name="dominio" Type="System.String" Scope="User">
+      <Value Profile="(Default)">dermaexpress-dev.myshopify.com</Value>
+    </Setting>
+    <Setting Name="api_v_shopify" Type="System.String" Scope="User">
+      <Value Profile="(Default)">2023-10</Value>
+    </Setting>
+    <Setting Name="TokenShopify" Type="System.String" Scope="User">
+      <Value Profile="(Default)">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</Value>
+    </Setting>
+    <Setting Name="HanaConection" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Server=172.16.61.28:30013;UserID=SYSTEM;Password=B1AdminH2;Database=NDB</Value>
+    </Setting>
+    <Setting Name="orderShopify" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orders.json</Value>
+    </Setting>
+    <Setting Name="ordersShopifyByDate" Type="System.String" Scope="User">
+      <Value Profile="(Default)">orders.json?created_at_min=</Value>
+    </Setting>
+    <Setting Name="customerShopify" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/customers/</Value>
+    </Setting>
+    <Setting Name="WhsCode" Type="System.String" Scope="User">
+      <Value Profile="(Default)">01</Value>
+    </Setting>
+    <Setting Name="ProductVariant" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/admin/api/2023-10/variants/</Value>
+    </Setting>
+    <Setting Name="graphql" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/admin/api/2023-10/graphql.json?</Value>
+    </Setting>
+    <Setting Name="adjunst" Type="System.String" Scope="User">
+      <Value Profile="(Default)">inventory_levels/adjust.json</Value>
+    </Setting>
+    <Setting Name="location_id" Type="System.String" Scope="User">
+      <Value Profile="(Default)">66487746780</Value>
+    </Setting>
+    <Setting Name="OrdersSAP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Orders</Value>
+    </Setting>
+    <Setting Name="metafields" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/metafields.json</Value>
+    </Setting>
+    <Setting Name="InvoiceSAP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Invoices</Value>
+    </Setting>
+    <Setting Name="IncomingPayments" Type="System.String" Scope="User">
+      <Value Profile="(Default)">IncomingPayments</Value>
+    </Setting>
+    <Setting Name="Product" Type="System.String" Scope="User">
+      <Value Profile="(Default)">products.json</Value>
+    </Setting>
+    <Setting Name="ListPrices" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="inventory_levels" Type="System.String" Scope="User">
+      <Value Profile="(Default)">/admin/api/2023-10/inventory_levels/adjust.json</Value>
+    </Setting>
+    <Setting Name="UnidadNegocio" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D</Value>
+    </Setting>
+    <Setting Name="metafieldSAP" Type="System.String" Scope="User">
+      <Value Profile="(Default)">idsap</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
