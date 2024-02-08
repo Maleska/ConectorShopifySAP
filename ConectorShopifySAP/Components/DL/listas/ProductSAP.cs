@@ -9,6 +9,7 @@ namespace ConectorShopifySAP.Components.DL.listas
 {
     internal class ProductSAP
     {
+        public string Id { get; set; }
         public string ItemCode { get; set; }
         public string ItemName { get; set; }    
         public string CodeBars { get; set; }

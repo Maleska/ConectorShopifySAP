@@ -1137,7 +1137,7 @@ namespace ConectorShopifySAP.Components.DL
                 {
                     cnn.Open();
                 }
-                using (HanaCommand command = new HanaCommand("update \"NOVADB\".\"PURCHASEORDERS\" SET \"SINCRONIZADO\" = '1' WHERE  \"ID\" ='" + id + "' ", cnn))
+                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"PURCHASEORDERS\" SET \"SINCRONIZADO\" = '1' WHERE  \"ID\" ='" + id + "' ", cnn))
                 {
                     command.ExecuteNonQuery();
                 }
@@ -1291,7 +1291,8 @@ namespace ConectorShopifySAP.Components.DL
         }
         public static List<Products> getAllProductPrices()
         {
-            string query = "SELECT * FROM \"" + Properties.Settings.Default.CompanyDB + "\".\"PRICES\" WHERE \"SINC\" ='00'";
+            //string query = "SELECT * FROM \"" + Properties.Settings.Default.CompanyDB + "\".\"PRICES\" WHERE \"SINC\" ='00'";
+            string query = "SELECT * FROM \"SYNCDB\".\"PRICES\" WHERE \"SINC\" ='00'";
             if (cnn.State == ConnectionState.Closed)
             {
                 cnn.Open();
@@ -1306,10 +1307,12 @@ namespace ConectorShopifySAP.Components.DL
                 {
                     while (_reader.Read())
                     {
-                        productSAP.ItemCode = _reader.GetString(0).ToString();
-                        productSAP.ItemName = _reader.GetString(1).ToString();
+                        productSAP.Id = _reader.GetString(0).ToString();
+                        productSAP.ItemCode = _reader.GetString(1).ToString();
+                        productSAP.ItemName = _reader.GetString(2).ToString();
                         //id = _reader.GetString(2).ToString();
                         listaProductSAP.Add(productSAP);
+                        productSAP = new ProductSAP();
                     }
                 }
                 _reader.Close();
@@ -1338,11 +1341,12 @@ namespace ConectorShopifySAP.Components.DL
                     {
                         while (_reader.Read())
                         {
+                            product.product.id = listaProductSAP[i].Id;
                             product.product.title = _reader.GetString(1).ToString();
                             product.product.variants.sku = _reader.GetString(2).ToString();
                             product.product.variants.price = _reader.GetString(3).ToString();
                             listaProduct.Add(product);
-                            
+                            product.product = new product();
                         }
                         _reader.Close();
                         //cnn.Close();
@@ -1398,7 +1402,7 @@ namespace ConectorShopifySAP.Components.DL
                         var response = httpClient.PostAsJsonAsync("graphql.json", querys).Result;
 
                         if (response.IsSuccessStatusCode)
-                        {
+                        {   
                             string jsonResponse = await response.Content.ReadAsStringAsync();
 
                             JObject jsonObject = JObject.Parse(jsonResponse);
@@ -1408,9 +1412,16 @@ namespace ConectorShopifySAP.Components.DL
                             //lista[i].available_adjustment = jsonObject["data"]["products"]["edges"][0]["node"]["variants"]["edges"][0]["node"]["inventoryQuantity"].ToString();
                             //lista[i].inventory_item_id = jsonObject["data"]["products"]["edges"][0]["node"]["variants"]["edges"][0]["node"]["inventoryItem"]["legacyResourceId"].ToString();
                             //Globals.inventory_quantity = jsonObject["data"]["products"]["edges"][0]["node"]["variants"]["edges"][0]["node"]["inventoryQuantity"].ToString();
-                            updateVariantsShopify(lista[i].product.id,
+                            if(!updateVariantsShopify(lista[i].product.id,
                                                    lista[i].product.variants.sku,
-                                                   lista[i].product.variants.price,"");
+                                                   lista[i].product.variants.price, ""))
+                            {
+                                Log("No se puede actualizar el precio del siguiente producto: " + lista[i].product.variants.sku);
+                            }
+                            else
+                            {
+                                Log("Se actualizo el precio del siguiente producto: " + lista[i].product.variants.sku);
+                            }
                         }
                     }
                 }
@@ -1588,11 +1599,11 @@ namespace ConectorShopifySAP.Components.DL
                 //var json = JsonConvert.SerializeObject(product);
                 //var content = new StringContent(json.ToString(), Encoding.UTF8, "application/json");
                 query = "{\"variant\": {" +
-                    "\"id\": \"" + id + "\"," +
-                        "\"sku\": \"" + sku + "\"," +
-                        "\"price\": \"" + price.Replace(",",".") + "\"" +
-                        "}" +
-                     "}";
+                        "\"id\": \"" + id + "\"," +
+                            "\"sku\": \"" + sku + "\"," +
+                            "\"price\": \"" + price.Replace(",",".") + "\"" +
+                            "}" +
+                         "}";
 
                  var content = new StringContent(query.ToString(), Encoding.UTF8, "application/json");
 
@@ -1947,7 +1958,8 @@ namespace ConectorShopifySAP.Components.DL
                         JArray arr = (JArray)jsonObject["customers"];
                         if (arr.Count == 0 || arr == null )
                         {
-                            BL.Functions.CreateCustomer(cardname.Split(' ')[0], cardname.Split(' ')[1] != null ? "": cardname.Split(' ')[1], email, ""); ;
+                            BL.Functions.CreateCustomer(cardname.Split(' ')[0], cardname.Split(' ')[1] != null ? "": cardname.Split(' ')[1], email, "",cardCode); ;
+
                             return;
                         }
 
@@ -2026,7 +2038,8 @@ namespace ConectorShopifySAP.Components.DL
                             }
                         
                         }
-                        UpdateCustomerMetafieldsShopify(Id,listMetafield);
+                        UpdateCustomerMetafieldsShopify(Id,listMetafield,cardCode);
+
                     }
                 }
 
@@ -2062,6 +2075,7 @@ namespace ConectorShopifySAP.Components.DL
                         //JObject jsonObject = JObject.Parse(response.Content.ReadAsStringAsync().Result);
                         if (response.StatusCode == HttpStatusCode.Created)
                         {
+                            Functions.UpdateSyncBP(cardcode);
                             Log("Se actualizo el " + Settings.Default.metafieldSAP + " " + cardcode);
                         }
                         else
@@ -2077,7 +2091,7 @@ namespace ConectorShopifySAP.Components.DL
                 Log ("Error en CreateMetafieldsCustomerShopify : " +ex.Message);
             }
         }
-        public static void UpdateCustomerMetafieldsShopify(string idcustomer,List<metafields> customers)
+        public static void UpdateCustomerMetafieldsShopify(string idcustomer,List<metafields> customers,string cardcode)
         {
             try
             {
@@ -2103,9 +2117,11 @@ namespace ConectorShopifySAP.Components.DL
                             HttpResponseMessage response = httpClient.SendAsync(request).Result;
 
                             //JObject jsonObject = JObject.Parse(response.Content.ReadAsStringAsync().Result);
-                            if (response.StatusCode == HttpStatusCode.OK)
-                                {
+                            if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.Created)
+                            {
+                                Components.DL.Functions.UpdateSyncBP(cardcode);
                                 Log("Se actualizo el " + Settings.Default.metafieldSAP + " " + customers[i].value);
+
                             }
                             else
                             {
@@ -2188,6 +2204,29 @@ namespace ConectorShopifySAP.Components.DL
                 Log(ex.Message);
             }
             return E_Mail;
+        }
+        public static void UpdateSyncBP(string CardCode)
+        {
+            try
+            {
+                if (cnn.State == ConnectionState.Closed)
+                {
+                    cnn.Open();
+                }
+                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"BUSINESS_PARTNER\" SET \"SINCRONIZADO\" = '1' WHERE  \"CARDCODE\" ='" + CardCode + "' ", cnn))
+                {
+                    command.ExecuteNonQuery();
+                }
+                //cnn.Close();
+            }
+            catch (HanaException ex)
+            {
+                Log("Error Hana error: " + ex.Message);
+            }
+        }
+        public static void UpdateSyncPrices(string Id)
+        {
+
         }
         //public static string UpdatePricesShopify()
         //{

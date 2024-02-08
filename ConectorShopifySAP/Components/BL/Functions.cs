@@ -555,7 +555,7 @@ namespace ConectorShopifySAP.Components.BL
             }
 
         }
-        public static void CreateCustomer(string Nombre, string Apellido, string email, string phone)
+        public static void CreateCustomer(string Nombre, string Apellido, string email, string phone,string cardcode)
         {
             try
             {
@@ -589,6 +589,7 @@ namespace ConectorShopifySAP.Components.BL
 
                         if (response.IsSuccessStatusCode)
                         {
+                            Components.DL.Functions.UpdateSyncBP(cardcode);
                             Components.DL.Functions.Log("Cliente creado: " + Nombre + " " + Apellido);
                         }
                     }
