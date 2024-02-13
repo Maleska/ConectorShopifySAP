@@ -584,15 +584,15 @@ namespace ConectorShopifySAP.Components.DL
             {
                 HanaDataReader _reader = command.ExecuteReader();
 
-                if (_reader.HasRows)
-                {
+                //if (_reader.HasRows)
+                //{
                     while (_reader.Read())
                     {
                         docnum = _reader.GetString(0).ToString();
                         docentry = _reader.GetString(1).ToString();
                         id = _reader.GetString(2).ToString();
                     }
-                }
+                //}
                 _reader.Close();
                 //cnn.Close();
             }
@@ -1190,8 +1190,8 @@ namespace ConectorShopifySAP.Components.DL
             {
                 HanaDataReader _reader = command.ExecuteReader();
 
-                if (_reader.HasRows)
-                {
+                //if (_reader.HasRows)
+                //{
                     while (_reader.Read())
                     {
                         //if (_reader.GetString(6).ToString() == Properties.Settings.Default.WhsCode)
@@ -1209,7 +1209,7 @@ namespace ConectorShopifySAP.Components.DL
                             valoresItems = new Items();
                         //}
                     }
-                }
+                //}
                 _reader.Close();
                 //cnn.Close();
 
@@ -1238,8 +1238,8 @@ namespace ConectorShopifySAP.Components.DL
             {
                 HanaDataReader _reader = command.ExecuteReader();
 
-                if (_reader.HasRows)
-                {
+                //if (_reader.HasRows)
+                //{
                     while (_reader.Read())
                     {
                         //if (_reader.GetString(6).ToString() == Properties.Settings.Default.WhsCode)
@@ -1257,8 +1257,8 @@ namespace ConectorShopifySAP.Components.DL
                         valoresItems = new Items();
                         //}
                     }
-                }
-                _reader.Close();
+                //}
+                //_reader.Close();
                 //cnn.Close();
 
                 return listaItems;
@@ -1766,7 +1766,7 @@ namespace ConectorShopifySAP.Components.DL
                 listaProduct = new List<Products>();
                 System.Globalization.CultureInfo culInfo = new System.Globalization.CultureInfo("es-Mx");
 
-                query = "select distinct T0.\"ItemCode\",T1.\"ItemName\",T1.\"CodeBars\",cast(T0.\"Price\" as decimal(19,2)),(T1.\"OnHand\" - T1.\"IsCommited\") as \"Disponible\", T1.\"FrgnName\" " +
+                query = "select distinct T0.\"ItemCode\",T1.\"ItemName\",T1.\"CodeBars\",cast(T0.\"Price\" as decimal(19,2)),(T1.\"OnHand\" - T1.\"IsCommited\") as \"Disponible\", COALESCE(T1.\"FrgnName\",'') " +
                         "from \"" + Properties.Settings.Default.CompanyDB + "\".ITM1 T0 " +
                         "inner join \"" + Properties.Settings.Default.CompanyDB + "\".OITM T1 on T0.\"ItemCode\" = T1.\"ItemCode\" " +
                         "where T1.\"ItemType\" = 'I' and T1.\"CodeBars\"!= '' and T0.\"PriceList\" = '"+ Settings.Default.ListPrices +"' ";
@@ -1780,8 +1780,8 @@ namespace ConectorShopifySAP.Components.DL
                 {
                     HanaDataReader _reader = command.ExecuteReader();
 
-                    if (_reader.HasRows)
-                    {
+                    //if (_reader.HasRows)
+                    //{
                         while (_reader.Read())
                         {
                             product.product.title = _reader.GetString(5).ToString();
@@ -1796,7 +1796,7 @@ namespace ConectorShopifySAP.Components.DL
                         }
                         _reader.Close();
                         //cnn.Close();
-                    }
+                    //}
                 }
             }
             catch (Exception ex)
@@ -1910,8 +1910,8 @@ namespace ConectorShopifySAP.Components.DL
                 {
                     HanaDataReader _reader = command.ExecuteReader();
 
-                    if (_reader.HasRows)
-                    {
+                    //if (_reader.HasRows)
+                    //{
                         while (_reader.Read())
                         {
                             values.CardCode = _reader.GetString(0).ToString();
@@ -1921,8 +1921,8 @@ namespace ConectorShopifySAP.Components.DL
                             FindCustomerShopifyByEmail(values.email,values.CardCode, values.CardName);
                             values = new customersSAP();
                         }
-                    }
-                    _reader.Close();
+                    //}
+                    //_reader.Close();
                     //cnn.Close();
                 }
             }
@@ -2213,7 +2213,7 @@ namespace ConectorShopifySAP.Components.DL
                 {
                     cnn.Open();
                 }
-                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"BUSINESS_PARTNER\" SET \"SINCRONIZADO\" = '1' WHERE  \"CARDCODE\" ='" + CardCode + "' ", cnn))
+                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"BUSINESS_PARTNER\" SET \"SYNC\" = '01' WHERE  \"CARDCODE\" ='" + CardCode + "' ", cnn))
                 {
                     command.ExecuteNonQuery();
                 }

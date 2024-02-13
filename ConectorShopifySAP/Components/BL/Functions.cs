@@ -245,7 +245,7 @@ namespace ConectorShopifySAP.Components.BL
             if (listaProduct.Count > 0)
             {
 
-            Components.DL.Functions.SynPricesShopify(listaProduct);
+                Components.DL.Functions.SynPricesShopify(listaProduct);
             }
         }
         public static void ValidNewRegisterGoodsEntrys()
@@ -559,18 +559,28 @@ namespace ConectorShopifySAP.Components.BL
         {
             try
             {
+                CustomerShopify customerShopify = new CustomerShopify();
+                List<CustomerShopify> lista = new List<CustomerShopify>();
                 string query = string.Empty;
 
-
-                    query = "{\"customer\": { email:" + email + "," +
-                            "\"first_name\": " + Nombre + "," +
-                            "\"last_name\": " + Apellido + "," +
-                            "\"phone\" : "+ phone +"}";
-
-                var content = new StringContent(query.ToString(), Encoding.UTF8, "application/json");
+                customerShopify.customer = new detalle();
+                customerShopify.customer.email = email;
+                customerShopify.customer.phone = phone;
+                customerShopify.customer.first_name = Nombre;
+                customerShopify.customer.last_name = Apellido;
+                //query = @"{\"customer\": { \"email\":\"" + email + "\"," +
+                //        "\"first_name\": \"" + Nombre + "\"," +
+                //        "\"last_name\": \"" + Apellido + "\"," +
+                //        "\"phone\" : \""+ phone +"\"}}";
+                lista.Add(customerShopify);
+                customerShopify = new CustomerShopify();
+                customerShopify.customer = new detalle();
+                var json = JsonConvert.SerializeObject(lista);
+                //var content = new StringContent(query.ToString(), Encoding.UTF8, "application/json");
+                var content = new StringContent(json.ToString().Replace("[","").Replace("]",""), Encoding.UTF8, "application/json");
 
                 string url = "https://" + Properties.Settings.Default.dominio + "/admin/api/" + Properties.Settings.Default.api_v_shopify +
-                    "/customer.json";
+                    "/customers.json";
 
                 using (var httpClient = new HttpClient())
                 {
@@ -591,6 +601,10 @@ namespace ConectorShopifySAP.Components.BL
                         {
                             Components.DL.Functions.UpdateSyncBP(cardcode);
                             Components.DL.Functions.Log("Cliente creado: " + Nombre + " " + Apellido);
+                        }
+                        else
+                        {
+                            Components.DL.Functions.Log("Error al crear el cliente : " + Nombre + " " + Apellido);
                         }
                     }
                 }

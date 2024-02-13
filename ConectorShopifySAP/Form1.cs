@@ -16,7 +16,8 @@ namespace ConectorShopifySAP
         #region Variables
         private static int lastRowCount, lastRowCountOINV = 0;
         private static string fechaOV;
-        Thread synShopifySAP;
+        static Thread synShopifySAP;
+        //Thread synShopifySAP
         //string fecha = dtp_Fecha.Text.ToString();
         #endregion
         public frmInicio()
@@ -319,9 +320,12 @@ namespace ConectorShopifySAP
             //Components.DL.Functions.getListCustomerShopify();
             //Components.DL.Functions.GetCustomerSAP();
 
-            Thread synShopifySAP = new Thread(new ThreadStart(GetCustomer));
-            synShopifySAP.Start();
-            synShopifySAP.Join();
+            synShopifySAP = new Thread(new ThreadStart(GetCustomer));
+            if (!synShopifySAP.IsAlive)
+            {
+                synShopifySAP.Start();
+                synShopifySAP.Join();
+            }
         }
         private static void SyncOVThread()
         {
@@ -333,9 +337,14 @@ namespace ConectorShopifySAP
         private static void GetCustomer()
         {
             System.Timers.Timer timer_Invoice = new System.Timers.Timer(20000);
-            timer_Invoice.Elapsed += SyncCustonerThread;
-            timer_Invoice.AutoReset = true;
-            timer_Invoice.Start();
+            if (synShopifySAP.IsAlive)
+            {
+                timer_Invoice.Elapsed += SyncCustonerThread;
+                timer_Invoice.AutoReset = false;
+                timer_Invoice.Start();
+                //synShopifySAP.Join();
+            }
+           
         }
         private static void SyncCustonerThread(object sender,EventArgs e) {
 
