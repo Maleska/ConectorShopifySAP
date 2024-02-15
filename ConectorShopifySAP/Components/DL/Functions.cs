@@ -36,6 +36,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 using System.Linq.Expressions;
 using System.Net.NetworkInformation;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using System.Drawing;
 
 namespace ConectorShopifySAP.Components.DL
 {
@@ -373,57 +374,92 @@ namespace ConectorShopifySAP.Components.DL
         }
         public static string getRowCountInvoice()
         {
+            string valor = "0";
             if (cnn.State == System.Data.ConnectionState.Closed)
             {
                 cnn.Open();
             }
             using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"INVOICE\" order by \"ID\" desc", cnn))
             {
-                return (string)command.ExecuteScalar();
+                HanaDataReader _reader = command.ExecuteReader();
+                while (_reader.Read())
+                {
+                    valor = _reader.GetString(0).ToString() == "" ? _reader.GetString(0).ToString() : "0";
+                }
+                //return (string)command.ExecuteScalar().ToString();
+                return valor;
             }
         }
         public static string getRowCountGoodsEntry()
         {
+            string valor = "0";
             if (cnn.State == System.Data.ConnectionState.Closed)
             {
                 cnn.Open();
             }
-            using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"ENTRYS\" where \"SYNC\" ='00' order by \"ID\" desc", cnn))
+            using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"GOODS_ENTRYS\" where \"SYNC\" ='00' group by \"ID\" order by \"ID\" desc", cnn))
             {
-                return (string)command.ExecuteScalar();
+                HanaDataReader _reader = command.ExecuteReader();
+                while (_reader.Read())
+                {
+                    valor = _reader.GetString(0).ToString() == "" ? _reader.GetString(0).ToString(): "0";
+                }
+                //return (string)command.ExecuteScalar().ToString();
+                return valor;
             }
         }
         public static string getRowCountInventoryTransfer()
         {
+            string valor = "0";
             if (cnn.State == System.Data.ConnectionState.Closed)
             {
                 cnn.Open();
             }
             using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"TRANSFERS\" where \"SYNC\" = '00'", cnn))
             {
-                return (string)command.ExecuteScalar().ToString();
+                HanaDataReader _reader = command.ExecuteReader();
+                while (_reader.Read())
+                {
+                    valor = _reader.GetString(0).ToString() == "" ? _reader.GetString(0).ToString() : "0";
+                }
+                //return (string)command.ExecuteScalar().ToString();
+                return valor;
             }
         }
         public static string getRowCountGoodsIssue()
         {
+            string valor = "0";
             if (cnn.State == System.Data.ConnectionState.Closed)
             {
                 cnn.Open();
             }
             using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"GOODS_ISSUE\" where \"SYNC\" = '00'", cnn))
             {
-                return (string)command.ExecuteScalar().ToString();
+                HanaDataReader _reader = command.ExecuteReader();
+                while (_reader.Read())
+                {
+                    valor = _reader.GetString(0).ToString() == "" ? _reader.GetString(0).ToString() : "0";
+                }
+                //return (string)command.ExecuteScalar().ToString();
+                return valor;
             }
         }   
         public static string getRowCountBP()
         {
+            string valor = "0";
             if (cnn.State == System.Data.ConnectionState.Closed)
             {
                 cnn.Open();
             }
             using (HanaCommand command = new HanaCommand("SELECT COUNT(\"ID\") FROM \"SYNCDB\".\"BUSINESS_PARTNER\" where \"SYNC\" = '00'", cnn))
             {
-                return (string)command.ExecuteScalar().ToString();
+                HanaDataReader _reader = command.ExecuteReader();
+                while (_reader.Read())
+                {
+                    valor = _reader.GetString(0).ToString() == "" ? _reader.GetString(0).ToString() : "0";
+                }
+                //return (string)command.ExecuteScalar().ToString();
+                return valor;
             }
         }
         //public static void getLastRegisterOINV(ref string docnum, ref string docentry,ref string id)
@@ -483,8 +519,8 @@ namespace ConectorShopifySAP.Components.DL
             {
                 HanaDataReader _reader = command.ExecuteReader();
 
-                if (_reader.HasRows)
-                {
+                //if (_reader.HasRows)
+                //{
                     while (_reader.Read())
                     {
                         valoresItems.ItemCode = _reader.GetString(0).ToString();
@@ -495,10 +531,10 @@ namespace ConectorShopifySAP.Components.DL
                         valoresItems.Commited = int.Parse(_reader.GetString(5).ToString());
                         valoresItems.exists = int.Parse(_reader.GetString(4).ToString()) - (int.Parse(_reader.GetString(3).ToString()) + int.Parse(_reader.GetString(5).ToString()));
 
-                       
+                        listaItems.Add(valoresItems);
                         valoresItems = new Items();
                     }
-                }
+                //}
                 _reader.Close();
                 //cnn.Close();
 
@@ -597,6 +633,54 @@ namespace ConectorShopifySAP.Components.DL
                 //cnn.Close();
             }
         }
+        public static void getLastRegisterTransfer(ref string docnum, ref string docentry, ref string id)
+        {
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+
+            using (HanaCommand command = new HanaCommand("select \"DOCNUM\",\"DOCENTRY\",\"ID\" from \"SYNCDB\".\"TRANSFERS\" order by \"ID\" desc limit 1", cnn))
+            {
+                HanaDataReader _reader = command.ExecuteReader();
+
+                //if (_reader.HasRows)
+                //{
+                while (_reader.Read())
+                {
+                    docnum = _reader.GetString(0).ToString();
+                    docentry = _reader.GetString(1).ToString();
+                    id = _reader.GetString(2).ToString();
+                }
+                //}
+                _reader.Close();
+                //cnn.Close();
+            }
+        }
+        public static void getLastRegisterGoodsIssue(ref string docnum, ref string docentry, ref string id)
+        {
+            if (cnn.State == ConnectionState.Closed)
+            {
+                cnn.Open();
+            }
+
+            using (HanaCommand command = new HanaCommand("select \"DOCNUM\",\"DOCENTRY\",\"ID\" from \"SYNCDB\".\"GOODS_ISSUE\" order by \"ID\" desc limit 1", cnn))
+            {
+                HanaDataReader _reader = command.ExecuteReader();
+
+                //if (_reader.HasRows)
+                //{
+                while (_reader.Read())
+                {
+                    docnum = _reader.GetString(0).ToString();
+                    docentry = _reader.GetString(1).ToString();
+                    id = _reader.GetString(2).ToString();
+                }
+                //}
+                _reader.Close();
+
+            }
+        }
         public static void SyncOnHandSAPShopify(List<listas.Items> lista)
         {
             try
@@ -645,7 +729,7 @@ namespace ConectorShopifySAP.Components.DL
                 Log(ex.Message);
             }
         }
-        public static void SyncOnHandSAPShopifyPlus(List<listas.Items> lista)
+        public static void SyncOnHandSAPShopifyPlus(List<listas.Items> lista,string id)
         {
             try
             {
@@ -687,6 +771,7 @@ namespace ConectorShopifySAP.Components.DL
                         }
                     }
                 }
+                UpdateSyncGoodsEntry(id);
             }
             catch (Exception ex)
             {
@@ -1420,6 +1505,7 @@ namespace ConectorShopifySAP.Components.DL
                             }
                             else
                             {
+                                UpdateSyncPrices(lista[i].product.id);
                                 Log("Se actualizo el precio del siguiente producto: " + lista[i].product.variants.sku);
                             }
                         }
@@ -2226,7 +2312,41 @@ namespace ConectorShopifySAP.Components.DL
         }
         public static void UpdateSyncPrices(string Id)
         {
-
+            try
+            {
+                if (cnn.State == ConnectionState.Closed)
+                {
+                    cnn.Open();
+                }
+                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"PRICES\" SET \"SYNC\" = '01' WHERE  \"ID\" ='" + Id + "' ", cnn))
+                {
+                    command.ExecuteNonQuery();
+                }
+                //cnn.Close();
+            }
+            catch (HanaException ex)
+            {
+                Log("Error Hana error: " + ex.Message);
+            }
+        }
+        public static void UpdateSyncGoodsEntry(string Id)
+        {
+            try
+            {
+                if (cnn.State == ConnectionState.Closed)
+                {
+                    cnn.Open();
+                }
+                using (HanaCommand command = new HanaCommand("update \"SYNCDB\".\"GOODS_ENTRYS\" SET \"SYNC\" = '01' WHERE  \"ID\" ='" + Id+ "' ", cnn))
+                {
+                    command.ExecuteNonQuery();
+                }
+                //cnn.Close();
+            }
+            catch (HanaException ex)
+            {
+                Log("Error Hana error: " + ex.Message);
+            }
         }
         //public static string UpdatePricesShopify()
         //{

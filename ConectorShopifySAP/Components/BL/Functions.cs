@@ -261,7 +261,7 @@ namespace ConectorShopifySAP.Components.BL
                 if (ListaItems.Count > 0)
                 {
                     DL.Functions.FindItemsBySKUShopify(ListaItems);
-                    DL.Functions.SyncOnHandSAPShopifyPlus(ListaItems);
+                    DL.Functions.SyncOnHandSAPShopifyPlus(ListaItems,id);
                 }
             }
         }
@@ -271,6 +271,8 @@ namespace ConectorShopifySAP.Components.BL
             if (currentRowCount > lastRowCountInvenetoryTransfer)
             {
                 lastRowCountInvenetoryTransfer = currentRowCount;
+
+                DL.Functions.getLastRegisterGoodsEntrys(ref docnum, ref docentry, ref id);
                 ListaItems = DL.Functions.RecalcInventoryTransfer(docnum);
                 if (ListaItems.Count > 0)
                 {
@@ -287,6 +289,7 @@ namespace ConectorShopifySAP.Components.BL
             if (currentRowCount == lastRowCountGoodsIssue)
             {
                 lastRowCountGoodsIssue = currentRowCount;
+                DL.Functions.getLastRegisterGoodsIssue(ref docnum, ref docentry, ref id);
                 ListaItems = DL.Functions.RecalcGoodsIssue(docnum);
                 if (ListaItems.Count > 0)
                 {
